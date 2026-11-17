@@ -1,0 +1,7 @@
+{% extends 'base.html' %}{% block body %}<section class="sec"><div class="wrap" id="status">
+<div class="between"><h1>My donations</h1><a class="btn" href="/donate">Add Food Donation</a></div>
+{% for r in rows %}<div class="card row-card reveal"><div><h4>{{ r.food_type }} · {{ r.quantity|round(1) }} {{ r.unit }}</h4>
+<p class="muted">Serves {{ r.servings }} · Pickup {{ r.pickup_date }} {{ r.pickup_time }} · {{ r.pickup_location }}</p></div>
+<span class="badge s{{ STATUSES.index(r.status) }}">{{ r.status }}</span></div>
+{% else %}<div class="empty">No donations yet. <a href="/donate">Add your first donation</a>.</div>{% endfor %}
+</div></section>{% endblock %}

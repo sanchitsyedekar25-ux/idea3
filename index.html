@@ -1,0 +1,30 @@
+{% extends 'base.html' %}{% block body %}
+<section class="hero"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i>
+<div class="wrap hero-grid"><div class="hero-text">
+<h1>Turn Surplus Food Into Hope</h1>
+<p class="lead">Connecting restaurants, hotels and volunteers to help surplus food reach people who need it.</p>
+<div class="row"><a class="btn" href="/donate">Donate Surplus Food</a><a class="btn ghost" href="/volunteer/register">Become a Volunteer</a></div></div>
+<div class="visual"><div class="plate" data-tilt>🍲</div><span class="chip c1">🥗</span><span class="chip c2">🍞</span><span class="chip c3">🤝</span><span class="chip c4">🚚</span><span class="chip c5">❤️</span></div></div></section>
+
+<section class="sec"><div class="wrap narrow reveal"><h2>About the project</h2>
+<p>Large amounts of edible food are wasted by restaurants and hotels while many people struggle to get proper meals. This platform helps redirect safe surplus food to registered beneficiaries.</p></div></section>
+
+<section class="sec alt"><div class="wrap"><h2 class="center reveal">How it works</h2>
+<div class="steps">
+{% for ic, t in [('🍽️','Restaurant/Hotel Donates Food'),('🔍','Staff Verifies Donation'),('🙋','Volunteer is Assigned'),('📦','Food is Collected'),('🏘️','Food is Distributed')] %}
+<div class="step reveal" style="--d:{{loop.index0*120}}ms"><div class="ico">{{ic}}</div><h4>{{t}}</h4></div>{% if not loop.last %}<span class="arrow">➜</span>{% endif %}{% endfor %}
+</div></div></section>
+
+<section class="sec"><div class="wrap"><h2 class="center reveal">Three main participants</h2>
+<div class="grid3">
+<a class="card big reveal" data-tilt href="/login/restaurant"><div class="ico">🏨</div><h3>Restaurant &amp; Hotel</h3><p>Provide surplus edible food.</p></a>
+<a class="card big reveal" data-tilt style="--d:120ms" href="/volunteer/register"><div class="ico">🤝</div><h3>Volunteer</h3><p>Help collect, transport and distribute food.</p></a>
+<div class="card big reveal" data-tilt style="--d:240ms"><div class="ico">🧡</div><h3>Beneficiary</h3><p>Receive food free of cost through the registered distribution system.</p></div></div></div></section>
+
+<section class="sec stats"><div class="wrap"><h2 class="center reveal">Our impact</h2><div class="grid4">
+{% for l, v in [('Food Donated (kg/portions)', stats.food), ('Meals Distributed', stats.meals), ('Volunteers', stats.vols), ('Restaurants & Hotels', stats.rests)] %}
+<div class="stat reveal"><b class="count" data-to="{{ v|int }}">0</b><span>{{l}}</span></div>{% endfor %}</div></div></section>
+
+<section class="sec"><div class="wrap cta reveal"><h2>Have surplus food?</h2><p>Don't let good food go to waste.</p>
+<div class="row center"><a class="btn light" href="/donate">Donate Food</a><a class="btn outline" href="/volunteer/register">Join as Volunteer</a></div></div></section>
+{% endblock %}

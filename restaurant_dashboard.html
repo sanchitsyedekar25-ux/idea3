@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% block body %}<section class="sec"><div class="wrap">
+<h1>Welcome, {{ session.name }}</h1><p class="lead">Thank you for helping reduce food waste.</p>
+<div class="grid4">{% for l, v, i in [('Total Donations', s.total, '🍱'), ('Pending Donations', s.pending, '⏳'), ('Verified Donations', s.verified, '✅'), ('Distributed Donations', s.done, '🍽️')] %}
+<div class="card stat2 reveal" data-tilt><div class="ico">{{i}}</div><b>{{v}}</b><span>{{l}}</span></div>{% endfor %}</div>
+<div class="row"><a class="btn" href="/donate">Add Food Donation</a><a class="btn ghost" href="/restaurant/donations">View Donations</a><a class="btn ghost" href="/restaurant/donations#status">View Donation Status</a><a class="btn ghost" href="/logout">Logout</a></div>
+</div></section>{% endblock %}

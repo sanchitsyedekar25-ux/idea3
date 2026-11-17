@@ -1,0 +1,11 @@
+{% extends 'base.html' %}{% from 'base.html' import fld %}{% block body %}
+<section class="sec authwrap"><form method="post" class="panel wide reveal" novalidate>
+<h2>Register as a volunteer</h2><div class="two">
+{{ fld('Full name','name','text',f.name) }}{{ fld('Phone number','phone','tel',f.phone) }}
+{{ fld('Email','email','email',f.email) }}{{ fld('Area / location','area','text',f.area) }}</div>
+{{ fld('Address','address','text',f.address) }}
+<p class="lbl">Available days</p><div class="chips">{% for d in DAYS %}<label><input type="checkbox" name="days" value="{{d}}" {{ 'checked' if d in f.getlist('days') }}><span>{{d}}</span></label>{% endfor %}</div>
+<div class="two">{{ fld('Available time (e.g. 6 PM - 9 PM)','avail_time','text',f.avail_time) }}
+<label class="fld"><select name="help_type" required>{% for h in HELP %}<option {{ 'selected' if f.help_type == h }}>{{h}}</option>{% endfor %}</select><span class="up">Type of help</span></label>
+{{ fld('Password','password','password') }}{{ fld('Confirm password','confirm','password') }}</div>
+<button class="btn block">Register as Volunteer</button></form></section>{% endblock %}

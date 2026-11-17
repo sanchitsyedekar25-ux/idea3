@@ -1,0 +1,21 @@
+{% macro fld(label, name, type='text', val='', extra='', req=True) -%}
+<label class="fld"><input type="{{type}}" name="{{name}}" value="{{ val }}" placeholder=" " {{ 'required' if req }} {{extra|safe}}><span>{{label}}</span></label>
+{%- endmacro %}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ title or 'Surplus Food Management System' }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head><body>
+<div id="loader"><div class="spin">🍃</div></div>
+<header class="nav"><a class="brand" href="/">🌿 SurplusFood</a>
+<button id="burger" aria-label="Menu">☰</button>
+<nav id="menu"><a href="/">Home</a><a href="/how-it-works">How It Works</a><a href="/donate">Donate Food</a><a href="/volunteer/register">Volunteer</a>
+{% if session.role %}<a href="{{ url_for(session.role + '_dashboard') }}">Dashboard</a><a class="btn sm" href="/logout">Logout</a>
+{% else %}<details class="dd"><summary>Login</summary><div><a href="/login/restaurant">Restaurant / Hotel</a><a href="/login/volunteer">Volunteer</a><a href="/login/admin">Admin / Staff</a></div></details>{% endif %}
+</nav></header>
+{% with m = get_flashed_messages(with_categories=true) %}{% if m %}<div class="flashes">{% for c, t in m %}<div class="flash {{c}}">{{t}}</div>{% endfor %}</div>{% endif %}{% endwith %}
+<main>{% block body %}{% endblock %}</main>
+<footer class="foot"><div class="wrap cols">
+<div><h4>🌿 Surplus Food Management System</h4><p>Redirecting safe surplus food from restaurants and hotels to registered beneficiaries, free of cost.</p></div>
+<div><h4>Quick links</h4><a href="/how-it-works">How It Works</a><a href="/donate">Donate Food</a><a href="/volunteer/register">Become a Volunteer</a><a href="/login/admin">Staff Login</a></div>
+<div><h4>Contact</h4><p>Project Office, Bhayandar, Maharashtra<br>contact@surplusfood.org<br>+91 98765 43210</p></div></div>
+<p class="copy">© 2026 Surplus Food Management System. College IT project.</p></footer>
+<script src="{{ url_for('static', filename='app.js') }}"></script></body></html>

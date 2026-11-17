@@ -1,0 +1,10 @@
+{% extends 'base.html' %}{% from 'base.html' import fld %}{% block body %}
+{% set names = {'admin':'Admin / Staff','restaurant':'Restaurant / Hotel','volunteer':'Volunteer'} %}
+<section class="sec authwrap"><i class="blob b1"></i><form method="post" class="panel auth reveal" novalidate>
+<h2>{{ names[role] }} login</h2>
+{{ fld('Email', 'email', 'email') }}{{ fld('Password', 'password', 'password') }}
+<button class="btn block">Log in</button>
+{% if role == 'volunteer' %}<p class="muted">New here? <a href="/volunteer/register">Register as a volunteer</a></p>{% endif %}
+{% if role == 'restaurant' %}<p class="muted">Accounts are created by project office staff. Demo: demo@restaurant.com / demo123</p>{% endif %}
+{% if role == 'admin' %}<p class="muted">Demo: admin@surplusfood.org / admin123</p>{% endif %}
+</form></section>{% endblock %}

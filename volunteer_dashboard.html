@@ -1,0 +1,14 @@
+{% extends 'base.html' %}{% block body %}<section class="sec"><div class="wrap">
+<h1>Hello, {{ session.name }}</h1>
+<div class="grid3">{% for l, v in [('Total Tasks', s.total), ('Pending Tasks', s.pending), ('Completed Tasks', s.done)] %}<div class="card stat2 reveal" data-tilt><b>{{v}}</b><span>{{l}}</span></div>{% endfor %}</div>
+<h2>Assigned tasks</h2><div class="grid2">
+{% for t in tasks %}<div class="card reveal"><div class="between"><h4>{{ t.rname }}</h4><span class="badge s{{ STATUSES.index(t.status) }}">{{ t.status }}</span></div>
+<dl><dt>Pickup location</dt><dd>{{ t.pickup_location }}</dd><dt>Pickup</dt><dd>{{ t.pickup_date }} at {{ t.pickup_time }}</dd>
+<dt>Food</dt><dd>{{ t.food_type }} · {{ t.quantity|round(1) }} {{ t.unit }}</dd><dt>Distribution location</dt><dd>{{ t.distribution_location or 'To be confirmed' }}</dd></dl>
+<div class="row">
+{% if t.status == 'Volunteer Assigned' %}{% if not t.task_accepted %}<form method="post" action="/volunteer/task/{{t.id}}/accept"><button class="btn sm">Accept Task</button></form>{% endif %}
+<form method="post" action="/volunteer/task/{{t.id}}/collect"><button class="btn sm ghost">Mark Food Collected</button></form>{% endif %}
+{% if t.status == 'Food Collected' %}<form method="post" action="/volunteer/task/{{t.id}}/deliver"><button class="btn sm">Mark Delivered</button></form>{% endif %}
+{% if t.status == 'Distributed' %}<span class="muted">Completed. Thank you!</span>{% endif %}</div></div>
+{% else %}<div class="empty">No tasks assigned yet. Staff will assign you to a verified donation.</div>{% endfor %}</div>
+</div></section>{% endblock %}

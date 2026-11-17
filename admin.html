@@ -1,0 +1,60 @@
+{% extends 'base.html' %}{% from 'base.html' import fld %}{% block body %}
+{% macro badge(s) %}<span class="badge s{{ STATUSES.index(s) }}">{{s}}</span>{% endmacro %}
+{% macro bform(b) %}<form method="post" class="panel two" novalidate>
+{{ fld('Name','name','text',b.name if b else '') }}{{ fld('Phone (if available)','phone','tel',b.phone if b else '',req=False) }}
+{{ fld('Address / location','address','text',b.address if b else '') }}{{ fld('Family members','family_members','number',b.family_members if b else '','min="1"') }}
+{{ fld('Preferred distribution location','pref_location','text',b.pref_location if b else '') }}{{ fld('Preferred distribution time','pref_time','text',b.pref_time if b else '') }}
+{{ fld('Registration date','reg_date','date',b.reg_date if b else today) }}
+<label class="fld"><select name="status">{% for s in ['Active','Inactive'] %}<option {{ 'selected' if b and b.status == s }}>{{s}}</option>{% endfor %}</select><span class="up">Status</span></label>
+<button class="btn">{{ 'Save changes' if b else 'Add Beneficiary' }}</button></form>{% endmacro %}
+<div class="admin"><aside class="side">{% for l, e, p in [('📊 Dashboard','admin_dashboard','dashboard'),('🍱 Food Donations','admin_donations','donations'),('🏨 Restaurants & Hotels','admin_restaurants','restaurants'),('🤝 Volunteers','admin_volunteers','volunteers'),('👨‍👩‍👧 Beneficiaries','admin_beneficiaries','beneficiaries'),('🧾 Distribution Records','admin_distributions','distributions')] %}
+<a href="{{ url_for(e) }}" class="{{ 'on' if page.startswith(p) or (p == 'donations' and page == 'donation') }}">{{l}}</a>{% endfor %}<a href="/logout">🚪 Logout</a></aside>
+<section class="content">
+{% if page == 'dashboard' %}<h1>Admin dashboard</h1><div class="grid3">
+{% for l, v, i in s %}<div class="card stat2 reveal" data-tilt><div class="ico">{{i}}</div><b>{{v|int}}</b><span>{{l}}</span></div>{% endfor %}</div>
+<h2>Recent donations</h2><div class="tbl"><table><tr><th>Restaurant/Hotel</th><th>Food</th><th>Pickup</th><th>Status</th><th></th></tr>
+{% for r in rows %}<tr><td>{{r.rname}}</td><td>{{r.food_type}}</td><td>{{r.pickup_date}}</td><td>{{ badge(r.status) }}</td><td><a href="/admin/donations/{{r.id}}">Manage</a></td></tr>
+{% else %}<tr><td colspan="5" class="empty">No donations yet.</td></tr>{% endfor %}</table></div>
+
+{% elif page == 'donations' %}<h1>Food donations</h1>
+<form class="filters"><input name="q" placeholder="Search restaurant or food" value="{{term}}"><select name="status"><option value="">All statuses</option>{% for s in STATUSES %}<option {{ 'selected' if st == s }}>{{s}}</option>{% endfor %}</select><button class="btn sm">Filter</button></form>
+<div class="tbl"><table><tr><th>ID</th><th>Restaurant/Hotel</th><th>Food</th><th>Qty</th><th>Pickup</th><th>Volunteer</th><th>Status</th><th></th></tr>
+{% for r in rows %}<tr><td>#{{r.id}}</td><td>{{r.rname}}</td><td>{{r.food_type}}</td><td>{{r.quantity|round(1)}} {{r.unit}}</td><td>{{r.pickup_date}}</td><td>{{r.vname or '-'}}</td><td>{{ badge(r.status) }}</td><td><a href="/admin/donations/{{r.id}}">View / Manage</a></td></tr>
+{% else %}<tr><td colspan="8" class="empty">No donations match.</td></tr>{% endfor %}</table></div>
+
+{% elif page == 'donation' %}<h1>Donation #{{f.id}} {{ badge(f.status) }}</h1><div class="grid2">
+<div class="card"><h3>{{f.rname}} ({{f.kind}})</h3><dl><dt>Contact</dt><dd>{{f.contact_person}} · {{f.phone}} · {{f.email}}</dd><dt>Food</dt><dd>{{f.food_type}}, {{f.quantity|round(1)}} {{f.unit}}, serves {{f.servings}}</dd>
+<dt>Pickup</dt><dd>{{f.pickup_location}} on {{f.pickup_date}} at {{f.pickup_time}}</dd><dt>Prepared at</dt><dd>{{f.prepared_at}}</dd><dt>Notes</dt><dd>{{f.notes or '-'}}</dd></dl></div>
+<div class="card"><h3>Actions</h3>
+{% if f.status == 'Pending Verification' %}<form method="post" class="row"><button name="action" value="verify" class="btn sm">Verify</button><button name="action" value="reject" class="btn sm danger">Reject</button></form>{% endif %}
+{% if f.status in ['Verified','Volunteer Assigned'] %}<form method="post" class="stack"><input type="hidden" name="action" value="assign"><select name="volunteer_id" required><option value="">Choose volunteer</option>{% for v in vols %}<option value="{{v.id}}" {{ 'selected' if v.id == f.volunteer_id }}>{{v.name}} · {{v.area}} · {{v.days}} · {{v.help_type}}</option>{% endfor %}</select>
+<input name="location" placeholder="Distribution location" value="{{ f.distribution_location or '' }}"><button class="btn sm">Assign volunteer</button></form>{% endif %}
+<form method="post" class="stack"><input type="hidden" name="action" value="status"><select name="status">{% for s in STATUSES %}<option {{ 'selected' if f.status == s }}>{{s}}</option>{% endfor %}</select><button class="btn sm ghost">Update status</button></form></div></div>
+
+{% elif page == 'restaurants' %}<h1>Restaurants &amp; hotels</h1>
+<form method="post" class="panel two" novalidate>{{ fld('Name','name') }}<label class="fld"><select name="kind"><option>Restaurant</option><option>Hotel</option></select><span class="up">Type</span></label>
+{{ fld('Contact person','contact_person') }}{{ fld('Phone','phone','tel') }}{{ fld('Email','email','email') }}{{ fld('Address','address') }}{{ fld('Login password','password','password') }}<button class="btn">Add Restaurant/Hotel</button></form>
+<div class="tbl"><table><tr><th>Name</th><th>Type</th><th>Contact</th><th>Email</th><th>Donations</th></tr>{% for r in rows %}<tr><td>{{r.name}}</td><td>{{r.kind}}</td><td>{{r.contact_person}} · {{r.phone}}</td><td>{{r.email}}</td><td>{{r.n}}</td></tr>{% endfor %}</table></div>
+
+{% elif page == 'volunteers' %}<h1>Volunteers</h1><div class="tbl"><table><tr><th>Name</th><th>Contact</th><th>Area</th><th>Availability</th><th>Help type</th><th>Tasks</th><th>Completed</th></tr>
+{% for v in rows %}<tr><td>{{v.name}}</td><td>{{v.phone}}<br><small>{{v.email}}</small></td><td>{{v.area}}</td><td>{{v.days}}<br><small>{{v.avail_time}}</small></td><td>{{v.help_type}}</td><td>{{v.total}}</td><td>{{v.done}}</td></tr>
+{% else %}<tr><td colspan="7" class="empty">No volunteers have registered yet.</td></tr>{% endfor %}</table></div>
+
+{% elif page == 'beneficiaries' %}<h1>Beneficiaries</h1><p class="muted">Registered offline at the project office. Add their details here.</p>{{ bform(none) }}
+<form class="filters"><input name="q" placeholder="Search name, ID or address" value="{{term}}"><button class="btn sm">Search</button></form>
+<div class="tbl"><table><tr><th>ID</th><th>Name</th><th>Phone</th><th>Address</th><th>Family</th><th>Preferred</th><th>Registered</th><th>Status</th><th></th></tr>
+{% for b in rows %}<tr><td>{{b.code}}</td><td>{{b.name}}</td><td>{{b.phone or '-'}}</td><td>{{b.address}}</td><td>{{b.family_members}}</td><td>{{b.pref_location}}<br><small>{{b.pref_time}}</small></td><td>{{b.reg_date}}</td>
+<td><form method="post" class="inline"><input type="hidden" name="action" value="status"><input type="hidden" name="id" value="{{b.id}}"><select name="status" onchange="this.form.submit()">{% for s in ['Active','Inactive'] %}<option {{ 'selected' if b.status == s }}>{{s}}</option>{% endfor %}</select></form></td><td><a href="/admin/beneficiaries/{{b.id}}">View / Edit</a></td></tr>
+{% else %}<tr><td colspan="9" class="empty">No beneficiaries found.</td></tr>{% endfor %}</table></div>
+
+{% elif page == 'beneficiary' %}<h1>Edit {{b.code}}</h1>{{ bform(b) }}
+
+{% elif page == 'distributions' %}<h1>Distribution records</h1>
+<form method="post" class="panel two" novalidate><label class="fld"><select name="donation_id" required>{% for d in dons %}<option value="{{d.id}}">#{{d.id}} {{d.rname}} - {{d.food_type}}</option>{% endfor %}</select><span class="up">Food donation</span></label>
+<label class="fld"><select name="beneficiary_id" required>{% for b in bens %}<option value="{{b.id}}">{{b.code}} {{b.name}}</option>{% endfor %}</select><span class="up">Beneficiary</span></label>
+{{ fld('Quantity distributed (e.g. 5 kg)','quantity') }}{{ fld('Distribution location','location') }}{{ fld('Date','dist_date','date',today) }}{{ fld('Time','dist_time','time') }}
+<label class="fld"><select name="status"><option>Completed</option><option>Planned</option></select><span class="up">Status</span></label><button class="btn">Save record</button></form>
+<div class="tbl"><table><tr><th>ID</th><th>Donation</th><th>Restaurant/Hotel</th><th>Volunteer</th><th>Beneficiary</th><th>Qty</th><th>Location</th><th>Date &amp; time</th><th>Status</th></tr>
+{% for d in rows %}<tr><td>{{ 'DST-%04d'|format(d.id) }}</td><td>#{{d.donation_id}} {{d.food_type}}</td><td>{{d.rname}}</td><td>{{d.vname or '-'}}</td><td>{{d.code}} {{d.bname}}</td><td>{{d.quantity}}</td><td>{{d.location}}</td><td>{{d.dist_date}} {{d.dist_time}}</td><td>{{d.status}}</td></tr>
+{% else %}<tr><td colspan="9" class="empty">No distribution records yet.</td></tr>{% endfor %}</table></div>
+{% endif %}</section></div>{% endblock %}

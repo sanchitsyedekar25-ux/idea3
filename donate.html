@@ -1,0 +1,13 @@
+{% extends 'base.html' %}{% from 'base.html' import fld %}{% block body %}
+<section class="sec authwrap"><form method="post" class="panel wide reveal" novalidate>
+<h2>Donate surplus food</h2><p class="muted">Donating as <b>{{ r.name }}</b>. Staff will verify your donation before a volunteer is assigned.</p>
+<div class="two">
+{{ fld('Contact person','contact_person','text',f.contact_person or r.contact_person) }}{{ fld('Phone number','phone','tel',f.phone or r.phone) }}
+{{ fld('Email','email','email',f.email or r.email) }}{{ fld('Food type (e.g. Veg meals, bread)','food_type','text',f.food_type) }}
+{{ fld('Quantity of food','quantity','number',f.quantity,'min="0.1" step="0.1"') }}
+<label class="fld"><select name="unit"><option>kg</option><option>portions</option><option>litres</option></select><span class="up">Unit</span></label>
+{{ fld('Number of people it can serve','servings','number',f.servings,'min="1"') }}{{ fld('Pickup location','pickup_location','text',f.pickup_location or r.address) }}
+{{ fld('Available pickup date','pickup_date','date',f.pickup_date or today,'min="'~today~'"') }}{{ fld('Available pickup time','pickup_time','time',f.pickup_time) }}
+{{ fld('Food preparation time','prepared_at','time',f.prepared_at) }}</div>
+<label class="fld"><textarea name="notes" rows="3" placeholder=" ">{{ f.notes }}</textarea><span>Additional notes (optional)</span></label>
+<button class="btn block">Submit Food Donation</button></form></section>{% endblock %}

@@ -1,0 +1,8 @@
+{% extends 'base.html' %}{% block body %}
+<section class="sec"><div class="wrap narrow"><h1 class="center">How It Works</h1>
+<p class="center lead">From a hotel kitchen to a registered family's plate, every step is verified and recorded.</p>
+<div class="flow">
+{% for ic, t, d in [('🏨','Restaurant/Hotel','Registered donors only. Restaurants and hotels are the only food donors.'),('📝','Surplus Food Entry','The donor logs in and lists the food, quantity, servings and pickup time.'),('🔍','Staff Verification','Office staff check the details and verify or reject the donation.'),('🙋','Volunteer Assignment','Staff assign an available volunteer to the verified donation.'),('📦','Food Collection','The volunteer collects the food from the pickup location.'),('🚚','Transportation','Food is carried safely to the distribution location.'),('🍛','Distribution','Food is handed out and the distribution is recorded.'),('🧡','Registered Beneficiaries','People registered with the project office receive food free of cost.')] %}
+<div class="flow-item reveal"><div class="ico">{{ic}}</div><div><h4>{{t}}</h4><p>{{d}}</p></div></div>{% if not loop.last %}<div class="down">↓</div>{% endif %}{% endfor %}</div>
+<div class="note reveal"><h3>Why do beneficiaries register offline?</h3><p>Some beneficiaries may not have smartphones or internet access. They register in person at the project office, and office staff enter their details into the system. Beneficiaries do not need to use this website.</p></div>
+</div></section>{% endblock %}
